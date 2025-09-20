@@ -36,6 +36,7 @@ import carreiras.com.github.fundamentos_jetpack_compose_listas_lazy.components.S
 import carreiras.com.github.fundamentos_jetpack_compose_listas_lazy.model.Game
 import carreiras.com.github.fundamentos_jetpack_compose_listas_lazy.repository.getAllGames
 import carreiras.com.github.fundamentos_jetpack_compose_listas_lazy.repository.getGamesByStudio
+import carreiras.com.github.fundamentos_jetpack_compose_listas_lazy.repository.getGamesBySearch
 import carreiras.com.github.fundamentos_jetpack_compose_listas_lazy.ui.theme.FundamentosjetpackcomposelistaslazyTheme
 
 class MainActivity : ComponentActivity() {
@@ -58,6 +59,7 @@ class MainActivity : ComponentActivity() {
 fun GamesScreen(modifier: Modifier = Modifier) {
     var searchTextState by remember { mutableStateOf("") }
     var gamesListState by remember { mutableStateOf(getAllGames()) }
+    var isFiltered by remember { mutableStateOf(false) }
 
     Column(modifier = modifier.padding(16.dp)) {
         Text(
@@ -70,9 +72,12 @@ fun GamesScreen(modifier: Modifier = Modifier) {
             value = searchTextState,
             onValueChange = { searchTextState = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text(text = "Nome do estúdio") },
+            label = { Text(text = "Nome do estúdio ou jogo") },
             trailingIcon = {
-                IconButton(onClick = { gamesListState = getGamesByStudio(searchTextState) }) {
+                IconButton(onClick = { 
+                    gamesListState = getGamesBySearch(searchTextState)
+                    isFiltered = true
+                }) {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = ""
@@ -80,8 +85,8 @@ fun GamesScreen(modifier: Modifier = Modifier) {
                 }
             }
         )
-        // Botão de limpar filtro
-        if (searchTextState.isNotEmpty() || gamesListState != getAllGames()) {
+        // Botão de limpar filtro - aparece quando há filtro ativo
+        if (isFiltered) {
             Text(
                 text = "Limpar filtro",
                 modifier = Modifier
@@ -90,6 +95,7 @@ fun GamesScreen(modifier: Modifier = Modifier) {
                     .clickable {
                         searchTextState = ""
                         gamesListState = getAllGames()
+                        isFiltered = false
                     },
                 fontWeight = FontWeight.SemiBold,
                 color = androidx.compose.ui.graphics.Color.Blue
@@ -101,6 +107,7 @@ fun GamesScreen(modifier: Modifier = Modifier) {
                 StudioCard(game = game, onClick = {
                     searchTextState = game.studio
                     gamesListState = getGamesByStudio(game.studio)
+                    isFiltered = true
                 })
             }
         }

@@ -22,3 +22,10 @@ fun getGamesByStudio(studio: String): List<Game> {
         it.studio.startsWith(prefix = studio, ignoreCase = true)
     }
 }
+
+fun getGamesBySearch(searchText: String): List<Game> {
+    return getAllGames().filter {
+        it.studio.startsWith(prefix = searchText, ignoreCase = true) ||
+        it.title.startsWith(prefix = searchText, ignoreCase = true)
+    }
+}
